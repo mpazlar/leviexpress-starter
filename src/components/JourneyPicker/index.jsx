@@ -33,34 +33,28 @@ export const JourneyPicker = ({ onJourneyChange }) => {
   const [toCity, setToCity] = useState('');
   const [date, setDate] = useState('');
   const [cities, setCities] = useState([]);
-  const [dates, setDates] = useState([
-    {
-      dateBasic: '28.05.2021',
-      dateExtended: 'pá 28. květen 2021',
-    },
-    {
-      dateBasic: '29.05.2021',
-      dateExtended: 'so 29. květen 2021',
-    },
-  ]);
+  const [dates, setDates] = useState([]);
 
   useEffect(() => {
     fetch('https://leviexpress-backend.herokuapp.com/api/cities')
       .then((response) => response.json())
       .then((json) => setCities(json.data));
-    console.log('města');
   }, []);
 
   useEffect(() => {
     fetch('https://leviexpress-backend.herokuapp.com/api/dates')
       .then((response) => response.json())
       .then((json) => setDates(json.data));
-    console.log('data');
   }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(fromCity, toCity, date);
+    fetch(
+      `https://leviexpress-backend.herokuapp.com/api/journey?fromCity=${fromCity}&toCity=${toCity}&date=${date}`,
+    )
+      .then((response) => response.json())
+      .then((json) => onJourneyChange(json.data));
   };
 
   const handleFromCity = (event) => {
@@ -99,7 +93,11 @@ export const JourneyPicker = ({ onJourneyChange }) => {
             </select>
           </label>
           <div className="journey-picker__controls">
-            <button className="btn" type="submit">
+            <button
+              disabled={fromCity === '' || toCity === '' || date === ''}
+              className="btn"
+              type="submit"
+            >
               Vyhledat spoj
             </button>
           </div>
